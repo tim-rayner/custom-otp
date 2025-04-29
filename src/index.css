@@ -92,3 +92,41 @@ body {
     box-shadow: inset 0px 0px 0px 30px #7ac142;
   }
 }
+
+@keyframes shudder {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+.shudder {
+  animation: shudder 0.3s ease-in-out;
+}
+
+@keyframes fadeInFromBottom {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeInFromBottom 0.3s ease-out forwards;
+}
+
+/* Make input text transparent to show animated span */
+/* input[type="number"] {
+  color: transparent;
+  caret-color: transparent;
+} */

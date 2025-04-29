@@ -107,7 +107,11 @@ const PasswordInput = ({
 
   return (
     <>
-      <div className="flex items-center justify-center mt-6 max-w-md mx-auto overflow-hidden">
+      <div
+        className={`flex items-center justify-center mt-6 max-w-md mx-auto overflow-hidden ${
+          error ? "shudder" : ""
+        }`}
+      >
         {Array.from({ length: 6 }).map((_, index) => (
           <DigitInput
             key={index}
@@ -126,7 +130,7 @@ const PasswordInput = ({
         ))}
       </div>
       {error && (
-        <p className="text-red-500 text-sm mt-2">
+        <p className="text-red-500 text-sm mt-2 shudder">
           One time password is incorrect
         </p>
       )}

@@ -6,7 +6,7 @@ type LoadingButtonProps = {
 const LoadingButton = ({ isLoading, onClick }: LoadingButtonProps) => {
   return (
     <button
-      className={`bg-blue-500 text-white px-4 py-2 rounded-md flex items-center gap-2 my-6 ${
+      className={`bg-blue-500 text-white px-4 py-2 rounded-md flex items-center gap-2 my-6 cursor-pointer ${
         isLoading ? "opacity-75 cursor-not-allowed" : "hover:bg-blue-600"
       }`}
       onClick={onClick}
