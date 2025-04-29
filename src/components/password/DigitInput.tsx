@@ -6,6 +6,7 @@ type DigitInputProps = {
   index: number;
   focus?: boolean;
   onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
+  error?: boolean;
 };
 
 const DigitInput = ({
@@ -14,6 +15,7 @@ const DigitInput = ({
   index,
   focus = false,
   onKeyDown,
+  error,
 }: DigitInputProps) => {
   return (
     <input
@@ -23,7 +25,7 @@ const DigitInput = ({
       key={index}
       className={`border-2 border-gray-300 rounded-md p-2 ${
         focus ? "border-blue-500" : ""
-      }`}
+      } ${error ? "border-red-500" : ""}`}
       autoFocus={focus}
       onKeyDown={onKeyDown}
     />

@@ -4,9 +4,17 @@ import { KeyboardEvent, useRef, useState } from "react";
 
 type PasswordInputProps = {
   onChange: (passcode: string) => void;
+  error?: boolean;
+  successMessage?: React.ReactNode;
+  isLoading?: boolean;
 };
 
-const PasswordInput = ({ onChange }: PasswordInputProps) => {
+const PasswordInput = ({
+  onChange,
+  error = false,
+  successMessage,
+  isLoading,
+}: PasswordInputProps) => {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [passcode, setPasscode] = useState("");
@@ -67,6 +75,10 @@ const PasswordInput = ({ onChange }: PasswordInputProps) => {
     }
   };
 
+  if (successMessage) {
+    return <p>Success</p>;
+  }
+
   return (
     <>
       {Array.from({ length: 6 }).map((_, index) => (
@@ -79,8 +91,11 @@ const PasswordInput = ({ onChange }: PasswordInputProps) => {
           onKeyDown={handleKeyDown}
           index={index}
           focus={focusedIndex === index}
+          error={error}
         />
       ))}
+      {error && <p>Error</p>}
+      {isLoading && <p>Loading...</p>}
     </>
   );
 };
