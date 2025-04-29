@@ -1,3 +1,4 @@
+import AnimatedCheckmark from "../AnimatedCheckmark";
 import DigitInput from "./DigitInput";
 
 import { KeyboardEvent, useRef, useState } from "react";
@@ -5,14 +6,14 @@ import { KeyboardEvent, useRef, useState } from "react";
 type PasswordInputProps = {
   onChange: (passcode: string) => void;
   error?: boolean;
-  successMessage?: React.ReactNode;
+  success?: boolean;
   isLoading?: boolean;
 };
 
 const PasswordInput = ({
   onChange,
   error = false,
-  successMessage,
+  success = false,
   isLoading,
 }: PasswordInputProps) => {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -75,25 +76,31 @@ const PasswordInput = ({
     }
   };
 
-  if (successMessage) {
-    return <p>Success</p>;
+  if (success) {
+    return (
+      <div className="flex items-center justify-center my-12">
+        <AnimatedCheckmark />
+      </div>
+    );
   }
 
   return (
     <>
-      {Array.from({ length: 6 }).map((_, index) => (
-        <DigitInput
-          key={index}
-          ref={(el) => {
-            inputRefs.current[index] = el;
-          }}
-          onChange={(value) => handleChange(index, value)}
-          onKeyDown={handleKeyDown}
-          index={index}
-          focus={focusedIndex === index}
-          error={error}
-        />
-      ))}
+      <div className="flex items-center justify-center my-12 max-w-md mx-auto overflow-hidden">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <DigitInput
+            key={index}
+            ref={(el) => {
+              inputRefs.current[index] = el;
+            }}
+            onChange={(value) => handleChange(index, value)}
+            onKeyDown={handleKeyDown}
+            index={index}
+            focus={focusedIndex === index}
+            error={error}
+          />
+        ))}
+      </div>
       {error && <p>Error</p>}
       {isLoading && <p>Loading...</p>}
     </>

@@ -6,7 +6,7 @@ function App() {
   const [passcode, setPasscode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
   const handleChange = (passcode: string) => {
     setPasscode(passcode);
@@ -26,7 +26,7 @@ function App() {
     setIsLoading(true);
     mockSubmitSuccess()
       .then(() => {
-        setSuccessMessage("Success");
+        setSuccess(true);
         setIsLoading(false);
       })
       .catch(() => {
@@ -38,15 +38,17 @@ function App() {
   return (
     <>
       <h1>Custom OTP Input</h1>
-      <p>
-        We sent an email to tim@timrayner.com with a code to verify your
-        identity.
-      </p>
+      {!success && (
+        <p>
+          We sent an email to tim@timrayner.com with a code to verify your
+          identity.
+        </p>
+      )}
       <PasswordInput
         onChange={handleChange}
         error={error}
-        successMessage={successMessage}
         isLoading={isLoading}
+        success={success}
       />
     </>
   );
