@@ -1,4 +1,4 @@
-import { KeyboardEvent } from "react";
+import { ClipboardEvent, KeyboardEvent } from "react";
 
 type DigitInputProps = {
   onChange: (value: string) => void;
@@ -6,6 +6,7 @@ type DigitInputProps = {
   index: number;
   focus?: boolean;
   onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
+  onPaste?: (event: ClipboardEvent<HTMLInputElement>) => void;
   error?: boolean;
 };
 
@@ -15,6 +16,7 @@ const DigitInput = ({
   index,
   focus = false,
   onKeyDown,
+  onPaste,
   error,
 }: DigitInputProps) => {
   return (
@@ -28,6 +30,7 @@ const DigitInput = ({
       } ${error ? "border-red-500" : ""}`}
       autoFocus={focus}
       onKeyDown={onKeyDown}
+      onPaste={onPaste}
     />
   );
 };

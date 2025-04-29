@@ -1,7 +1,7 @@
 import AnimatedCheckmark from "../AnimatedCheckmark";
 import DigitInput from "./DigitInput";
 
-import { KeyboardEvent, useRef, useState } from "react";
+import { KeyboardEvent, useCallback, useEffect, useRef, useState } from "react";
 
 type PasswordInputProps = {
   onChange: (passcode: string) => void;
@@ -20,32 +20,38 @@ const PasswordInput = ({
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [passcode, setPasscode] = useState("");
 
-  const handleChange = (index: number, value: string) => {
-    const element = inputRefs.current[index];
-    if (element) {
-      element.value = value;
-      const newPasscode = passcode + value;
-      setPasscode(newPasscode);
-      blurAndFocusNext(index, newPasscode);
-    }
-  };
+  const blurAndFocusNext = useCallback(
+    (index: number, newPasscode: string) => {
+      const element = inputRefs.current[index];
+      const nextElement = inputRefs.current[index + 1];
+      if (element && nextElement) {
+        element.blur();
+      }
 
-  const blurAndFocusNext = (index: number, newPasscode: string) => {
-    const element = inputRefs.current[index];
-    const nextElement = inputRefs.current[index + 1];
-    if (element && nextElement) {
-      element.blur();
-    }
+      if (nextElement) {
+        nextElement.focus();
+        setFocusedIndex(index + 1);
+      }
 
-    if (nextElement) {
-      nextElement.focus();
-      setFocusedIndex(index + 1);
-    }
+      if (newPasscode.length === 6) {
+        onChange(newPasscode);
+      }
+    },
+    [onChange]
+  );
 
-    if (newPasscode.length === 6) {
-      onChange(newPasscode);
-    }
-  };
+  const handleChange = useCallback(
+    (index: number, value: string) => {
+      const element = inputRefs.current[index];
+      if (element) {
+        element.value = value;
+        const newPasscode = passcode + value;
+        setPasscode(newPasscode);
+        blurAndFocusNext(index, newPasscode);
+      }
+    },
+    [passcode, blurAndFocusNext]
+  );
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Backspace") handleBackspace(event);
@@ -75,6 +81,32 @@ const PasswordInput = ({
       }
     }
   };
+
+  const handlePaste = useCallback(
+    (event: globalThis.ClipboardEvent) => {
+      const pasteData = event.clipboardData?.getData("text").slice(0, 6);
+      if (!pasteData) return;
+
+      // Distribute the pasted numbers across inputs
+      pasteData.split("").forEach((digit, index) => {
+        if (index < 6) {
+          handleChange(index, digit);
+        }
+      });
+
+      if (pasteData.length === 6) {
+        onChange(pasteData);
+      }
+    },
+    [handleChange, onChange]
+  );
+
+  useEffect(() => {
+    document.addEventListener("paste", handlePaste);
+    return () => {
+      document.removeEventListener("paste", handlePaste);
+    };
+  }, [handlePaste]);
 
   if (success) {
     return (
