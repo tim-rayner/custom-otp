@@ -19,18 +19,22 @@ const PasswordInput = ({
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [passcode, setPasscode] = useState("");
+  const [values, setValues] = useState<string[]>(Array(6).fill(""));
 
   const blurAndFocusNext = useCallback(
     (index: number, newPasscode: string) => {
       const element = inputRefs.current[index];
       const nextElement = inputRefs.current[index + 1];
-      if (element && nextElement) {
+
+      if (element) {
         element.blur();
       }
 
       if (nextElement) {
-        nextElement.focus();
         setFocusedIndex(index + 1);
+        setTimeout(() => {
+          nextElement.focus();
+        }, 0);
       }
 
       if (newPasscode.length === 6) {
@@ -45,16 +49,15 @@ const PasswordInput = ({
       const element = inputRefs.current[index];
       if (element) {
         element.value = value;
-        const newPasscode = Array.from({ length: 6 }, (_, i) => {
-          if (i === index) return value;
-          if (i < index) return inputRefs.current[i]?.value || "";
-          return "";
-        }).join("");
+        const newValues = [...values];
+        newValues[index] = value;
+        setValues(newValues);
+        const newPasscode = newValues.join("");
         setPasscode(newPasscode);
         blurAndFocusNext(index, newPasscode);
       }
     },
-    [blurAndFocusNext]
+    [blurAndFocusNext, values]
   );
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -65,7 +68,10 @@ const PasswordInput = ({
     const isLastInput = focusedIndex === 5 && passcode.length === 6;
 
     if (event.key === "Backspace" && focusedIndex > 0) {
-      const newPasscode = passcode.slice(0, -1);
+      const newValues = [...values];
+      newValues[focusedIndex] = "";
+      setValues(newValues);
+      const newPasscode = newValues.join("");
       setPasscode(newPasscode);
 
       if (!isLastInput) {
@@ -73,6 +79,8 @@ const PasswordInput = ({
         const prevElement = inputRefs.current[prevIndex];
         if (prevElement) {
           prevElement.value = "";
+          newValues[prevIndex] = "";
+          setValues(newValues);
         }
 
         if (prevElement) {
@@ -90,11 +98,18 @@ const PasswordInput = ({
       if (!pasteData) return;
 
       const digits = pasteData.slice(0, 6);
+      const newValues = [...values];
       digits.forEach((digit, index) => {
+        newValues[index] = digit;
         handleChange(index, digit);
       });
+      setValues(newValues);
+
+      if (digits.length === 6) {
+        onChange(digits.join(""));
+      }
     },
-    [handleChange]
+    [handleChange, values, onChange]
   );
 
   if (success) {
@@ -108,9 +123,16 @@ const PasswordInput = ({
   return (
     <>
       <div
-        className={`flex items-center justify-center mt-6 max-w-md mx-auto overflow-hidden ${
+        className={` py-4 flex items-center justify-center mt-6 max-w-md mx-auto overflow-hidden ${
           error ? "shudder" : ""
         }`}
+        onClick={() => {
+          const firstInput = inputRefs.current[0];
+          if (firstInput) {
+            setFocusedIndex(0);
+            firstInput.focus();
+          }
+        }}
       >
         {Array.from({ length: 6 }).map((_, index) => (
           <DigitInput
@@ -124,13 +146,13 @@ const PasswordInput = ({
             focus={focusedIndex === index}
             error={error}
             type="number"
-            disabled={isLoading}
+            disabled={isLoading || focusedIndex !== index}
             onPaste={handlePaste}
           />
         ))}
       </div>
       {error && (
-        <p className="text-red-500 text-sm mt-2 shudder">
+        <p className="text-red-500 text-sm my-4 shudder">
           One time password is incorrect
         </p>
       )}
