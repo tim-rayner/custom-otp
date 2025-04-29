@@ -123,14 +123,16 @@ const PasswordInput = ({
   return (
     <>
       <div
-        className={` py-4 flex items-center justify-center mt-6 max-w-md mx-auto overflow-hidden ${
+        className={` py-4 flex items-center justify-center max-w-md mx-auto overflow-hidden ${
           error ? "shudder" : ""
         }`}
-        onClick={() => {
-          const firstInput = inputRefs.current[0];
-          if (firstInput) {
-            setFocusedIndex(0);
-            firstInput.focus();
+        onClick={(e) => {
+          if (e.target === e.currentTarget) {
+            const firstInput = inputRefs.current[0];
+            if (firstInput) {
+              setFocusedIndex(0);
+              firstInput.focus();
+            }
           }
         }}
       >
