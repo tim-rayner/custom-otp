@@ -99,7 +99,7 @@ const PasswordInput = ({
 
   if (success) {
     return (
-      <div className="flex items-center justify-center my-12">
+      <div className="flex items-center justify-center my-6">
         <AnimatedCheckmark />
       </div>
     );
@@ -107,7 +107,7 @@ const PasswordInput = ({
 
   return (
     <>
-      <div className="flex items-center justify-center my-12 max-w-md mx-auto overflow-hidden">
+      <div className="flex items-center justify-center mt-6 max-w-md mx-auto overflow-hidden">
         {Array.from({ length: 6 }).map((_, index) => (
           <DigitInput
             key={index}
@@ -125,8 +125,11 @@ const PasswordInput = ({
           />
         ))}
       </div>
-      {error && <p>Error</p>}
-      {isLoading && <p>Loading...</p>}
+      {error && (
+        <p className="text-red-500 text-sm mt-2">
+          One time password is incorrect
+        </p>
+      )}
     </>
   );
 };

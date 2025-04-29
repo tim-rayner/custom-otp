@@ -31,7 +31,7 @@ const DigitInput = ({
       max={9}
       min={0}
       key={index}
-      className={`border-2 border-gray-300 rounded-md w-12 h-12 mx-2 text-center text-xl ${
+      className={`border-2 border-gray-300 rounded-md w-12 h-12 mx-2 text-center text-xl [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
         focus ? "border-blue-500" : ""
       } ${error ? "border-red-500" : ""}`}
       autoFocus={focus}

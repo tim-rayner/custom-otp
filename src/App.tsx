@@ -1,7 +1,7 @@
 import { useState } from "react";
 import "./App.css";
+import LoadingButton from "./components/LoadingButton";
 import PasswordInput from "./components/password/PasswordInput";
-
 function App() {
   const [passcode, setPasscode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -35,13 +35,22 @@ function App() {
       });
   };
 
+  const handleManualSubmit = () => {
+    if (passcode.length !== 6) {
+      setError(true);
+      setIsLoading(false);
+      return;
+    }
+    handleSubmit();
+  };
+
   return (
-    <>
-      <h1>Custom OTP Input</h1>
+    <div className="flex flex-col items-center justify-center h-screen gap-4">
+      <h1 className="text-white text-2xl font-bold">Custom OTP Input</h1>
       {!success && (
-        <p>
-          We sent an email to tim@timrayner.com with a code to verify your
-          identity.
+        <p className="text-white text-sm">
+          We sent an email to tim.rayner2020@gmail.com with a code to verify
+          your identity.
         </p>
       )}
       <PasswordInput
@@ -50,7 +59,11 @@ function App() {
         isLoading={isLoading}
         success={success}
       />
-    </>
+
+      {!success && (
+        <LoadingButton isLoading={isLoading} onClick={handleManualSubmit} />
+      )}
+    </div>
   );
 }
 
