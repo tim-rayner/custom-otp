@@ -21,7 +21,7 @@ const PasswordInput = ({
   const [passcode, setPasscode] = useState("");
   const [values, setValues] = useState<string[]>(Array(6).fill(""));
 
-  const blurAndFocusNext = useCallback(
+  const focusNext = useCallback(
     (index: number, newPasscode: string) => {
       const nextElement = inputRefs.current[index + 1];
 
@@ -49,10 +49,10 @@ const PasswordInput = ({
         setValues(newValues);
         const newPasscode = newValues.join("");
         setPasscode(newPasscode);
-        blurAndFocusNext(index, newPasscode);
+        focusNext(index, newPasscode);
       }
     },
-    [blurAndFocusNext, values]
+    [focusNext, values]
   );
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
