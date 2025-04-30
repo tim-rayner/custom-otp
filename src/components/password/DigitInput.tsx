@@ -1,7 +1,6 @@
 import { ClipboardEvent, KeyboardEvent, forwardRef } from "react";
 
 type DigitInputProps = {
-  onChange: (value: string) => void;
   index: number;
   focus?: boolean;
   onKeyDown?: (event: KeyboardEvent<HTMLInputElement>) => void;
@@ -9,12 +8,12 @@ type DigitInputProps = {
   error?: boolean;
   type?: string;
   disabled?: boolean;
+  value?: string;
 };
 
 const DigitInput = forwardRef<HTMLInputElement, DigitInputProps>(
   (
     {
-      onChange,
       index,
       focus = false,
       onKeyDown,
@@ -22,16 +21,17 @@ const DigitInput = forwardRef<HTMLInputElement, DigitInputProps>(
       error,
       type = "number",
       disabled = false,
+      value = "",
     },
     ref
   ) => {
     return (
       <input
-        onChange={(e) => onChange(e.target.value)}
         ref={ref}
         max={9}
         min={0}
         key={index}
+        value={value}
         className={`w-10 h-12 sm:w-12 sm:h-14 mx-1 sm:mx-2 text-center text-xl font-semibold cursor-default
         bg-white/5 rounded-lg transition-colors duration-200
         [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none
@@ -44,7 +44,7 @@ const DigitInput = forwardRef<HTMLInputElement, DigitInputProps>(
         }
         ${
           disabled
-            ? "opacity-50 cursor-not-allowed"
+            ? ""
             : "focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
         }`}
         autoFocus={focus}

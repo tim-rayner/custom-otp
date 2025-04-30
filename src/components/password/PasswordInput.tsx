@@ -1,110 +1,73 @@
 import AnimatedCheckmark from "../AnimatedCheckmark";
 import DigitInput from "./DigitInput";
 
-import { KeyboardEvent, useCallback, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import HiddenInput from "./HiddenInput";
 
 type PasswordInputProps = {
   onChange: (passcode: string) => void;
   error?: boolean;
   success?: boolean;
-  isLoading?: boolean;
 };
 
 const PasswordInput = ({
   onChange,
   error = false,
   success = false,
-  isLoading,
 }: PasswordInputProps) => {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [passcode, setPasscode] = useState("");
   const [values, setValues] = useState<string[]>(Array(6).fill(""));
 
-  const focusNext = useCallback(
-    (index: number, newPasscode: string) => {
-      const nextElement = inputRefs.current[index + 1];
+  const handlePasscodeChange = useCallback(
+    (newPasscode: string) => {
+      // Extract first 6 numbers in order of appearance
+      const numbers = newPasscode.match(/\d/g) || [];
+      const firstSixNumbers = numbers.slice(0, 6).join("");
+      setPasscode(firstSixNumbers);
 
-      if (nextElement) {
-        setFocusedIndex(index + 1);
-        setTimeout(() => {
-          nextElement.focus();
-        }, 0);
+      const newValues = Array(6).fill("");
+      for (let i = 0; i < firstSixNumbers.length && i < 6; i++) {
+        newValues[i] = firstSixNumbers[i];
       }
+      setValues(newValues);
 
-      if (newPasscode.length === 6) {
-        onChange(newPasscode);
+      // Update focused index based on input length
+      const newFocusedIndex = Math.min(firstSixNumbers.length, 5);
+      setFocusedIndex(newFocusedIndex);
+
+      if (firstSixNumbers.length === 6) {
+        onChange(firstSixNumbers);
       }
     },
     [onChange]
   );
 
-  const handleChange = useCallback(
-    (index: number, value: string) => {
-      const element = inputRefs.current[index];
-      if (element) {
-        element.value = value;
-        const newValues = [...values];
-        newValues[index] = value;
-        setValues(newValues);
-        const newPasscode = newValues.join("");
-        setPasscode(newPasscode);
-        focusNext(index, newPasscode);
-      }
-    },
-    [focusNext, values]
-  );
-
-  const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Backspace") handleBackspace(event);
-  };
-
-  const handleBackspace = (event: KeyboardEvent<HTMLInputElement>) => {
-    const isLastInput = focusedIndex === 5 && passcode.length === 6;
-
-    if (event.key === "Backspace" && focusedIndex > 0) {
-      const newValues = [...values];
-      newValues[focusedIndex] = "";
-      setValues(newValues);
-      const newPasscode = newValues.join("");
-      setPasscode(newPasscode);
-
-      if (!isLastInput) {
-        const prevIndex = focusedIndex - 1;
-        const prevElement = inputRefs.current[prevIndex];
-        if (prevElement) {
-          prevElement.value = "";
-          newValues[prevIndex] = "";
-          setValues(newValues);
-        }
-
-        if (prevElement) {
-          setFocusedIndex(prevIndex);
-          prevElement.focus();
-        }
-      }
-    }
-  };
-
   const handlePaste = useCallback(
     (event: React.ClipboardEvent<HTMLInputElement>) => {
       event.preventDefault();
-      const pasteData = event.clipboardData?.getData("text").match(/\d/g);
-      if (!pasteData) return;
+      const pastedText = event.clipboardData.getData("text");
+      const numbers = pastedText.match(/\d/g) || [];
+      const firstSixNumbers = numbers.slice(0, 6).join("");
 
-      const digits = pasteData.slice(0, 6);
-      const newValues = [...values];
-      digits.forEach((digit, index) => {
-        newValues[index] = digit;
-        handleChange(index, digit);
-      });
-      setValues(newValues);
+      if (firstSixNumbers) {
+        setPasscode(firstSixNumbers);
+        const newValues = Array(6).fill("");
+        for (let i = 0; i < firstSixNumbers.length && i < 6; i++) {
+          newValues[i] = firstSixNumbers[i];
+        }
+        setValues(newValues);
 
-      if (digits.length === 6) {
-        onChange(digits.join(""));
+        const newFocusedIndex = Math.min(firstSixNumbers.length, 5);
+        setFocusedIndex(newFocusedIndex);
+
+        if (firstSixNumbers.length === 6) {
+          onChange(firstSixNumbers);
+        }
       }
     },
-    [handleChange, values, onChange]
+    [onChange]
   );
 
   if (success) {
@@ -116,9 +79,9 @@ const PasswordInput = ({
   }
 
   return (
-    <>
+    <div className="relative z-50">
       <div
-        className={` py-4 flex items-center justify-center max-w-md mx-auto overflow-hidden ${
+        className={`py-4 flex items-center justify-center max-w-md mx-auto overflow-hidden ${
           error ? "shudder" : ""
         }`}
         onClick={(e) => {
@@ -137,23 +100,26 @@ const PasswordInput = ({
             ref={(el) => {
               inputRefs.current[index] = el;
             }}
-            onChange={(value) => handleChange(index, value)}
-            onKeyDown={handleKeyDown}
+            value={values[index]}
             index={index}
             focus={focusedIndex === index}
             error={error}
             type="tel"
-            disabled={isLoading || focusedIndex !== index}
-            onPaste={handlePaste}
+            disabled={true}
           />
         ))}
       </div>
+      <HiddenInput
+        onChange={handlePasscodeChange}
+        onPaste={handlePaste}
+        value={passcode}
+      />
       {error && (
         <p className="text-red-500 text-sm my-4 shudder">
           One time password is incorrect
         </p>
       )}
-    </>
+    </div>
   );
 };
 
