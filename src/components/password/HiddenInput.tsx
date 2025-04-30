@@ -4,9 +4,17 @@ type HiddenInputProps = {
   onChange: (value: string) => void;
   value: string;
   onPaste?: (event: React.ClipboardEvent<HTMLInputElement>) => void;
+  className?: string;
+  style?: React.CSSProperties;
 };
 
-const HiddenInput = ({ onChange, value, onPaste }: HiddenInputProps) => {
+const HiddenInput = ({
+  onChange,
+  value,
+  onPaste,
+  className,
+  style,
+}: HiddenInputProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Focus handling
@@ -31,13 +39,21 @@ const HiddenInput = ({ onChange, value, onPaste }: HiddenInputProps) => {
   }, []);
 
   return (
-    <div className="absolute inset-0 z-10 opacity-0">
+    <div className="absolute inset-0 opacity-0">
       <input
         ref={inputRef}
         type="tel"
-        className="absolute inset-0 opacity"
+        className={`absolute inset-0 opacity ${className}`}
         maxLength={6}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={(e) => {
+          const newValue = e.target.value;
+          onChange(newValue);
+          if (newValue.length >= 6) {
+            setTimeout(() => {
+              inputRef.current?.blur();
+            }, 100); // Delay to ensure state updates before blurring
+          }
+        }}
         onPaste={onPaste}
         value={value}
         autoFocus
@@ -47,6 +63,10 @@ const HiddenInput = ({ onChange, value, onPaste }: HiddenInputProps) => {
           if (inputRef.current) {
             inputRef.current.setSelectionRange(value.length, value.length);
           }
+        }}
+        style={{
+          caretColor: "transparent",
+          ...style,
         }}
       />
     </div>

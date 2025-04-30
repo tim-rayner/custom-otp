@@ -79,7 +79,7 @@ const PasswordInput = ({
   }
 
   return (
-    <div className="relative z-50">
+    <div className="relative ">
       <div
         className={`py-4 flex items-center justify-center max-w-md mx-auto overflow-hidden ${
           error ? "shudder" : ""
@@ -113,6 +113,15 @@ const PasswordInput = ({
         onChange={handlePasscodeChange}
         onPaste={handlePaste}
         value={passcode}
+        style={{
+          opacity: 0.01,
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100%",
+          height: "100%",
+        }}
+        className="w-full h-full absolute inset-0"
       />
       {error && (
         <p className="text-red-500 text-sm my-4 shudder">
