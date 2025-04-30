@@ -23,12 +23,7 @@ const PasswordInput = ({
 
   const blurAndFocusNext = useCallback(
     (index: number, newPasscode: string) => {
-      const element = inputRefs.current[index];
       const nextElement = inputRefs.current[index + 1];
-
-      if (element) {
-        element.blur();
-      }
 
       if (nextElement) {
         setFocusedIndex(index + 1);
@@ -147,7 +142,7 @@ const PasswordInput = ({
             index={index}
             focus={focusedIndex === index}
             error={error}
-            type="number"
+            type="tel"
             disabled={isLoading || focusedIndex !== index}
             onPaste={handlePaste}
           />
