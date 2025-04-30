@@ -61,7 +61,6 @@ function App() {
         <PasswordInput
           onChange={handleChange}
           error={error}
-          isLoading={isLoading}
           success={success}
         />
 
